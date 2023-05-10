@@ -57,3 +57,8 @@ game.scene.add('StageClearScene3', stageClearScene3);
 
 // Starting Scene
 game.scene.start('TitleScene');
+
+
+// This variable should be useable inside the scene1.
+
+
