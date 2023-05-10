@@ -4,7 +4,11 @@ export default class GameScene extends Phaser.Scene {
     }
 
     init(){
-        
+        this.player;
+        this.enemy;
+        this.playerHP = 3;
+        this.score = 0;
+
     }
 
     preload(){
@@ -25,94 +29,92 @@ export default class GameScene extends Phaser.Scene {
         this.darkBackgroundLayer = this.map.createLayer('darkBackgroundLayer', this.tileset);
         this.gate = this.map.createLayer('Gate', this.tileset);
         this.checkpoint = this.map.createLayer('Checkpoint', this.tileset);
-
-
-        //this.physics.add.collider(player,middleplatoformLayer);
-        //this.physics.add.collider(player,baseplatformLayer);
-        //this.physics.add.collider(player,flyplatformLayer);
-        //this.physics.add.collider(enemy,middleplatoformLayer);
-        //this.physics.add.collider(enemy,baseplatformLayer);
-        //this.physics.add.collider(enemy,flyplatformLayer);
-        this.physics.add.collider(this.gate,middleplatoformLayer);
-        this.physics.add.collider(this.gate,baseplatformLayer);
-        this.physics.add.collider(this.gate,flyplatformLayer);
-        //this.physics.add.collider(key,middleplatoformLayer);
-        //this.physics.add.collider(key,baseplatformLayer);
-        //this.physics.add.collider(key,flyplatformLayer);
-        this.physics.add.overlap(player,spikeLayer,playerOnSpike);
-        this.physics.add.overlap(player,checkpoints,playerOnCheckPoint);
-        this.physics.add.overlap(player,enemy,playerIsHit);
-        this.physics.add.overlap(player,gate,playerOnDoor);
+        // Key still not loaded.
+    
+        this.physics.add.collider(this.player,this.middlePlatformLayer);
+        this.physics.add.collider(this.player,this.basePlatformLayer);
+        this.physics.add.collider(this.player,this.flyPlatformLayer);
+        this.physics.add.collider(this.enemy,this.middlePlatformLayer);
+        this.physics.add.collider(this.enemy,this.basePlatformLayerr);
+        this.physics.add.collider(this.enemy,this.flyPlatformLayer);
+        this.physics.add.collider(this.gate,this.middlePlatformLayer);
+        this.physics.add.collider(this.gate,this.basePlatformLayer);
+        this.physics.add.collider(this.gate,this.flyPlatformLayer);
+        //this.physics.add.collider(this.key,this.middlePlatformLayer);
+        //this.physics.add.collider(this.key,this.basePlatformLayer);
+        //this.physics.add.collider(this.key,this.flyPlatformLayer);
+        this.physics.add.overlap(this.player,this.spikeLayer,this.playerOnSpike);
+        this.physics.add.overlap(this.player,this.checkpoint,this.playerOnCheckPoint);
+        this.physics.add.overlap(this.player,this.enemy,this.playerIsHit);
+        this.physics.add.overlap(this.player,this.gate,this.playerOnDoor);
     }
     
     update(){
       
     }
 
+    playerIsHit(player, enemy, lastCheckpoint){
+        /* If Player collide with the enemy, the Player HP is deducted by 1 and Teleport Player to the Last Checkpoint
+            */ 
+         playerHP -= 1;
+         playerLastCheckpoint(player,lastCheckpoint);
+        // 
     
-
-}
-function playerIsHit(player, enemy, lastCheckpoint){
-    /* If Player collide with the enemy, the Player HP is deducted by 1 and Teleport Player to the Last Checkpoint
-        */ 
-     playerHP -= 1;
-     playerLastCheckpoint(player,lastCheckpoint);
-    // 
-
-}
-
-function playerOnSpike(player,spike, lastCheckpoint){
-    /**
-     * If Player collide with the spike, the Player HP is deducted by 1 and Teleport Player to the Last Checkpoint
-     */
-    playerHP -= 1 ;
-    playerLastCheckpoint(player,lastCheckpoint);
-}
-function playerOnCheckPoint(player, checkpoint){
-    /* if player collide with a checkpoint, get the X and Y of the checkpoint
-    */
-     lastCheckpoint = checkpoint;
-
-}
-function playerLastCheckpoint(player,lastCheckpoint){
-    /*
-     * Set Player X and Y to the last Checkpoint. 
-     */
-
-     player.x = lastCheckpoint.x;
-     player.y = lastCheckpoint.y;
-}
-
-
-function playerAttack(player, enemy){
-    /*If Player sword collide with the enemy
-     the enemy is destroyed and a score is added to the player.*/
-
-
-    enemy.destroy();
-    score += 1;
-}
-
-function doorKeyCollected(player,key){
-    /* Key is destroyed 
-       and set doorKeInPlayer from false to true
-       
-       Add a key image on top right to indicate that the key is collected.
-        */
-
-     doorKey.destroy();
-     doorKeyInPlayer = true;
-    // Image Text Here....
-
-}
-// This need to be in the scenes.... or Also just try use If statement and assign numbers to the currentLevel like var currentLevel = 1; then using this
-// variable we can use If(currentLevel == 1){this.scene.start(level2)};
-// Remember number in coding start at 0 though we can start at 1 if you want cause global currentLevel gonna be in 0:D.
-function playerOnDoor(player,door){
-    if(doorKeyInPlayer == true){
-        this.scene.start('level2');
-    }else{
-        //Show A text that say "Key is not Collected."
-        
     }
+    
+    playerOnSpike(player,spike, lastCheckpoint){
+        /**
+         * If Player collide with the spike, the Player HP is deducted by 1 and Teleport Player to the Last Checkpoint
+         */
+        playerHP -= 1 ;
+        playerLastCheckpoint(player,lastCheckpoint);
+    }
+     playerOnCheckPoint(player, checkpoint){
+        /* if player collide with a checkpoint, get the X and Y of the checkpoint
+        */
+         lastCheckpoint = checkpoint;
+    
+    }
+    playerLastCheckpoint(player,lastCheckpoint){
+        /*
+         * Set Player X and Y to the last Checkpoint. 
+         */
+    
+         player.x = lastCheckpoint.x;
+         player.y = lastCheckpoint.y;
+    }
+    
+    
+     playerAttack(player, enemy){
+        /*If Player sword collide with the enemy
+         the enemy is destroyed and a score is added to the player.*/
+        enemy.destroy();
+        score += 1;
+    }
+    
+     doorKeyCollected(player,key){
+        /* Key is destroyed 
+           and set doorKeInPlayer from false to true
+           
+           Add a key image on top right to indicate that the key is collected.
+            */
+    
+         doorKey.destroy();
+         doorKeyInPlayer = true;
+        // Image Text Here....
+    
+    }
+    // This need to be in the scenes.... or Also just try use If statement and assign numbers to the currentLevel like var currentLevel = 1; then using this
+    // variable we can use If(currentLevel == 1){this.scene.start(level2)};
+    // Remember number in coding start at 0 though we can start at 1 if you want cause global currentLevel gonna be in 0:D.
+     playerOnDoor(player,gate){
+        if(doorKeyInPlayer == true){
+            this.scene.start('level2');
+        }else{
+            //Show A text that say "Key is not Collected."
+            
+        }
+    }
+
 }
+ 
