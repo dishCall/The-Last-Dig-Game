@@ -13,8 +13,7 @@ export default class GameScene extends Phaser.Scene {
         this.score = 0;
         this.pMobs;
         this.gEnemies;
-        this.doorKeyInPlayer = false;
-        this.lastCheckpoint = {x:0 , y:0};
+        this.enemyMovementRange = 200;
     }
 
     preload(){
@@ -25,6 +24,7 @@ export default class GameScene extends Phaser.Scene {
         this.load.image('BlueShell', './assets/images/BlueShell.png');
         this.load.image('RedShell', './assets/images/RedShell.png');
         this.load.spritesheet('player', '/assets/images/Adventurer.png', {frameWidth: 32, frameHeight: 48});
+        this.load.spritesheet('player_attack', '/assets/images/AttackAnim.png', {frameWidth: 32, frameHeight: 48});
         this.load.audio("gameBGM", "/assets/audio/GameBGM.mp3");
         this.load.audio("CollectCoin", "/assets/audio/CollectCoinSFX.mp3");
         this.load.audio("Hitsfx", "/assets/audio/HitSFX.wav");
@@ -97,7 +97,7 @@ export default class GameScene extends Phaser.Scene {
         this.coins = this.physics.add.staticGroup()
         this.CoinLayer.forEach(object => {
             let obj = this.coins.create(object.x, object.y, "coin"); 
-            obj.setScale(0.12); 
+            obj.setScale(0.20); 
             obj.setOrigin(0.5, 0.5); 
             obj.body.width = object.width; 
             obj.body.height = object.height;
@@ -130,27 +130,35 @@ export default class GameScene extends Phaser.Scene {
     
         // Player
         this.player = this.physics.add.sprite(200, 850, 'player');
-    
+        this.player.setScale(1.2);
+
         this.player.setCollideWorldBounds(false);
-    
+
         this.anims.create({
             key: 'left',
             frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
             frameRate: 10,
             repeat: -1
         });
-    
+
         this.anims.create({
             key: 'turn',
-            frames: [ { key: 'player', frame: 4 } ],
+            frames: [{ key: 'player', frame: 4 }],
             frameRate: 20
         });
-    
+
         this.anims.create({
             key: 'right',
             frames: this.anims.generateFrameNumbers('player', { start: 5, end: 8 }),
             frameRate: 10,
             repeat: -1
+        });
+
+        this.anims.create({
+            key: 'attack',
+            frames: this.anims.generateFrameNumbers('player_attack', { start: 0, end: 3 }),
+            frameRate: 15,
+            repeat: 0
         });
 
         this.player.invulnerable = false;
@@ -180,7 +188,7 @@ export default class GameScene extends Phaser.Scene {
         this.physics.add.collider(this.gEnemies, this.platform);
         
 
-        this.physics.add.overlap(this.player, this.coins, this.doorKeyCollected, null, this);
+        this.physics.add.overlap(this.player, this.coins, this.collectCoins, null, this);
         this.physics.add.collider(this.player, this.pMobs, this.upMob, null, this);
         this.physics.add.collider(this.pMobs, this.gEnemies, this.hitMob, null, this);
 
@@ -200,8 +208,10 @@ export default class GameScene extends Phaser.Scene {
         this.cursors = this.input.keyboard.createCursorKeys();
         this.speed = 150;
         
-
-        if (this.cursors.left.isDown){
+        if (this.cursors.space.isDown) {
+            this.player.anims.play('attack', true);
+        }
+        else if (this.cursors.left.isDown){
             this.player.setVelocityX(-this.speed);
             this.player.anims.play('left', true);
         }
@@ -217,11 +227,11 @@ export default class GameScene extends Phaser.Scene {
         }   
     
         if (this.cursors.up.isDown && this.player.body.onFloor()){
-            this.player.setVelocityY(-1200);
+            this.player.setVelocityY(-380);
         }
     }
     
-    /*collectCoins(player, coins){
+    collectCoins(player, coins){
         coins.destroy(coins.x, coins.y)
         this.coinsScore ++;
         this.coinCounter++;
@@ -242,7 +252,7 @@ export default class GameScene extends Phaser.Scene {
         this.sound.play("CollectCoin", { volume: 0.3 });
     
         return false; 
-    }*/
+    }
     hitEnemy(player, gEnemies){
 
         player.setVelocityY(-400)
@@ -354,43 +364,4 @@ export default class GameScene extends Phaser.Scene {
         this.scene.start('GameOverScene');
       }
 
-    doorKeyCollected(player,coins){
-        /* Key is destroyed 
-           and set doorKeInPlayer from false to true
-    
-           Add a key image on top right to indicate that the key is collected.
-            /*/
-    
-           coins.destroy(coins.x, coins.y);
-           doorKeyInPlayer = true;
-        // Image Text Here....
-    return false;
-    }
-    playerOnDoor(player,door){
-        if(doorKeyInPlayer == true){
-            this.scene.start('level2');
-        }else{
-            //Show A text that say "Key is not Collected."
-            //Then after a few seconds, The text Vanish.
-        }
-    }
-    playerIsHit(player,enemy){
-        this.lives-=1;
-        this.playerLastCheckpoint(player, this.lastCheckpoint);
-    }
-    playerOnSpike(player,spike){
-        this.lives-=1;
-        this.playerLastCheckpoint(player, this.lastCheckpoint);
-    }
-    playerOnCheckpoint(player, checkpoint) {
-        // Store checkpoint location in lastCheckpoint object
-        this.lastCheckpoint.x = checkpoint.x;
-        this.lastCheckpoint.y = checkpoint.y;
-      }  
-    playerLastCheckpoint(player, lastCheckpoint) {
-        // Set player X and Y to the last checkpoint location
-        player.x = lastCheckpoint.x;
-        player.y = lastCheckpoint.y;
-      }
-      
 }
