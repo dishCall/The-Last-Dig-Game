@@ -19,11 +19,15 @@ export default class GameScene extends Phaser.Scene {
 
     preload(){
         this.load.image('tiles', './assets/maps/sheet.png');
-        this.load.tilemapTiledJSON('tilemap', './assets/maps/snowmap.tmj');
+        this.load.tilemapTiledJSON('tilemap', './assets/maps/Level1.tmj');
         this.load.image('heart', './assets/icons/heart.png');
         this.load.image('coin', './assets/images/Key.png');
+        this.load.image('FindKeyText', './assets/images/FindKey.png');
+        this.load.image('KeyCollectText', './assets/images/KeyCollect.png');
         this.load.image('BlueShell', './assets/images/BlueShell.png');
         this.load.image('RedShell', './assets/images/RedShell.png');
+        this.load.image("pauseButton", "/assets/buttons/Pause.png");
+        this.load.image("pauseButtonHover", "/assets/buttons/PauseHover.png");
         this.load.spritesheet('player', '/assets/images/Adventurer.png', {frameWidth: 32, frameHeight: 48});
         this.load.spritesheet('player_attack', '/assets/images/AttackAnim.png', {frameWidth: 32, frameHeight: 48});
         this.load.audio("gameBGM", "/assets/audio/GameBGM.mp3");
@@ -94,32 +98,8 @@ export default class GameScene extends Phaser.Scene {
     
         // Coins
         this.coins = this.physics.add.staticGroup();
-        this.coins.create(300, 300, 'coin');
-        // RedShell
-        this.enemyGround = this.map.getObjectLayer('ground enemies')['objects'];
-    
-        this.gEnemies = this.physics.add.group();
-        this.enemyGround.forEach(object => {
-            let obj = this.gEnemies.create(object.x, object.y, "RedShell");
-            obj.setScale(object.width/16, object.height/16); 
-            obj.setOrigin(0);
-            obj.setImmovable([true]); 
-            obj.body.width = object.width; 
-            obj.body.height = object.height;
-        })
-        
-        // BlueShell
-        this.pushMobs = this.map.getObjectLayer('push mobs')['objects'];
-        
-        this.pMobs = this.physics.add.group();
-        this.pushMobs.forEach(object => {
-            let obj = this.pMobs.create(object.x, object.y, "BlueShell");
-            obj.setScale(object.width/16, object.height/16); 
-            obj.setOrigin(0); 
-            obj.body.width = object.width; 
-            obj.body.height = object.height;
-        })
-    
+        this.coins.create(50, 100, 'coin');
+
         // Player
         this.player = this.physics.add.sprite(200, 850, 'player');
         this.player.setScale(1.2);
@@ -160,13 +140,32 @@ export default class GameScene extends Phaser.Scene {
         this.heart2 = this.add.sprite(60, 50, 'heart').setScrollFactor(0);
         this.heart3 = this.add.sprite(90, 50, 'heart').setScrollFactor(0);
 
-        // Texts
-      /*  this.coinText = this.add.text(180, 10, `Coins: ${this.coinsScore}x`, {
-            fontSize: '20px',
-            fill: '#000000'
-          });
-        this.coinText.setScrollFactor(0);
-    */
+        // Pause button
+        const pauseButton = this.add.image(770, 30, 'pauseButton')
+        .setInteractive()
+        .setScrollFactor(0)
+        .setScale(0.1)
+        .on('pointerup', () => {
+        this.sound.play('buttonClick');
+        this.scene.pause('GameScene');
+        this.scene.run('PauseScene');
+        });
+
+        const hoverImage = this.add.image(770, 30, 'pauseButtonHover')
+        .setAlpha(0)
+        .setScale(0.1)
+        .setScrollFactor(0);
+
+        pauseButton.on('pointerover', () => {
+        this.sound.play('buttonHover');
+        hoverImage.setAlpha(1);
+        });
+
+        pauseButton.on('pointerout', () => {
+        hoverImage.setAlpha(0);
+        });
+
+        // Scpre
         this.scoreText = this.add.text(15, 10, `Score: ${this.score}`,{
             fontSize: '20px',
             fill: '#000000'
@@ -175,18 +174,11 @@ export default class GameScene extends Phaser.Scene {
     
         // Physics and Camera
         this.physics.add.collider(this.player, this.platform);
-        this.physics.add.collider(this.player, this.pMobs);
-        this.physics.add.collider(this.pMobs, this.platform);
-        this.physics.add.collider(this.gEnemies, this.platform);
-        
 
         this.physics.add.overlap(this.player, this.coins, this.collectCoins, null, this);
-        this.physics.add.collider(this.player, this.pMobs, this.upMob, null, this);
-        this.physics.add.collider(this.pMobs, this.gEnemies, this.hitMob, null, this);
 
         // Lose Conditions - If player collides with red enemies/water
         this.physics.add.collider(this.player, this.water, this.gameOver, null, this);
-        this.physics.add.collider(this.player, this.gEnemies, this.hitEnemy, null, this);
         
         // Win Conditions - If player collides with the flag at the end of the map
         this.physics.add.collider(this.player, this.flag, this.playerOnDoor, null, this);
@@ -197,6 +189,7 @@ export default class GameScene extends Phaser.Scene {
     }
     
     update(){
+          
         this.cursors = this.input.keyboard.createCursorKeys();
         this.speed = 150;
         
@@ -223,140 +216,47 @@ export default class GameScene extends Phaser.Scene {
             this.player.setVelocityY(-500);
         }
     }
+
     
-    collectCoins(player, coins){
+    collectCoins(player, coins) {
         coins.destroy();
         this.coinsScore++;
     
-        this.keyIsInPlayer = true; // set keyIsInPlayer to true
-        this.add.text(510, 20, 'Key Collected!', {
-            font: 'bold 16px Arial',
-            fill: '#fff',
-            stroke: '#000',
-            strokeThickness: 4
-        }).setOrigin(1, 0).setScrollFactor(0); // add text to show that key is collected
+        this.keyIsInPlayer = true; 
+    
+        const keyCollectedImage = this.add.image(400, 100, "KeyCollectText")
+            .setOrigin(0.5, 1)
+            .setScale(0.15) 
+            .setScrollFactor(0);
+    
         this.sound.play("CollectCoin", { volume: 0.3 });
     
-        return false; 
-    }
-    hitEnemy(player, gEnemies){
-     
-    if (player.anims.currentAnim.key == 'attack') {
-        gEnemies.disableBody(false,false);
-        this.tweens.add({
-            targets: gEnemies,
-            alpha: 0.3,
-            scaleX: 1.5,
-            scaleY: 1.5,
-            ease: 'Linear',
-            duration: 200,
-            onComplete: function() {
-                gEnemies.destroy(gEnemies.x, gEnemies.y);
-            },
-        });
-
-        this.score+=100;
-        this.scoreText.setText(`Score: ${this.score}`);
-    }
+        this.time.delayedCall(3000, function() {
+            keyCollectedImage.destroy();
+        }, [], this);
     
-        else{
-            if (player.invulnerable == false){
-                this.sound.play("Hitsfx");
-                this.lives-=1
-                player.setTint(0xff0000);
-                player.invulnerable = true;
-                
-                if (this.lives == 2){
-                    this.tweens.add({
-                        targets: this.heart3,
-                        alpha: 0,
-                        scaleX: 0,
-                        scaleY: 0,
-                        ease: 'Linear',
-                        duration: 200
-                    });
-                }
-    
-                else if(this.lives == 1){
-                    this.tweens.add({
-                        targets: this.heart2,
-                        alpha: 0,
-                        scaleX: 0,
-                        scaleY: 0,
-                        ease: 'Linear',
-                        duration: 200
-                    });
-                }
-            }
-    
-            // remove I-frame
-            this.time.delayedCall(1000, this.removeIFrame, [], this);
-    
-            if(this.lives==0){
-                this.sound.play("Hitsfx");
-                this.scene.start("GameOverScene")
-                this.sound.stopAll();
-            }
-        }
+        return false;
     }
 
-    removeIFrame(){
-        this.player.clearTint()
-        this.player.invulnerable = false;
-    }
-    
-    hitMob (pMobs, gEnemies){
-        
-        pMobs.setVelocityX(100)
 
-        gEnemies.disableBody(false,false);
-        this.sound.play("FriendHitEnemysfx", { volume : 2});
-        this.tweens.add({
-            targets: gEnemies,
-            alpha: 0.3,
-            scaleX: 1.5,
-            scaleY: 1.5,
-            ease: 'Linear',
-            duration: 200,
-            onComplete: function() {
-                gEnemies.destroy(gEnemies.x, gEnemies.y);
-            },
-        });
-        this.score+=100;
-        this.scoreText.setText(`Score: ${this.score}`);    
-    }
-    
-    // when player is up the pMob
-    upMob (player, pMobs){
-
-        if(pMobs.body.touching.up && !pMobs.hit){
-            this.sound.play("JumpHitBluesfx")
-            player.setVelocityY(-400)
-        }
-    }
-
-    // Win-Lose Fucntions
+    // Win-Lose Functions
     playerOnDoor(player, flag) {
-        if (this.keyIsInPlayer) {
-            this.scene.start("StageClearScene");
-            this.sound.stopAll();
-        } else {
-            // Show text for a few seconds if the player hasn't collected the key
-            if (!this.keyReminderText) {
-                this.keyReminderText = this.add.text(350, 250, "You need to find the key first!", {
-                    font: 'bold 16px Arial',
-                    fill: '#fff',
-                    stroke: '#000',
-                    strokeThickness: 4
-                }).setOrigin(0.5, 1).setScrollFactor(0);
-    
-                this.time.delayedCall(3000, function() {
-                    this.keyReminderText.destroy();
-                    this.keyReminderText = null;
-                }, [], this);
-            }
+    if (this.keyIsInPlayer) {
+        this.scene.start("StageClearScene");
+        this.sound.stopAll();
+    } else {
+        if (!this.keyReminderImage) {
+            this.sound.play("buttonClick")
+            this.keyReminderImage = this.add.image(400, 100, "FindKeyText").setOrigin(0.5, 1).setScrollFactor(0);
+            this.keyReminderImage.setScale(0.15);
+            
+            this.time.delayedCall(3000, function() {
+                this.keyReminderImage.destroy();
+                this.keyReminderImage = null;
+            }, [], this);
         }
     }
+}
     
     gameOver() {
         this.sound.stopAll();

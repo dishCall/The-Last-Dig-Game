@@ -39,10 +39,10 @@ export default class GameOverScene extends Phaser.Scene{
         restartButton.setScale(1);
         restartButton.on("pointerover", () => {
             this.sound.play("buttonHover");
-            restartButton.setTexture("retryButtonHover"); // Switch to hover image
+            restartButton.setTexture("retryButtonHover"); 
         });
         restartButton.on("pointerout", () => {
-            restartButton.setTexture("retryButton"); // Switch back to normal image
+            restartButton.setTexture("retryButton"); 
         });
         restartButton.on("pointerdown", () => {
             this.sound.play("buttonClick");
@@ -53,10 +53,10 @@ export default class GameOverScene extends Phaser.Scene{
         titleButton.setScale(1);
         titleButton.on("pointerover", () => {
             this.sound.play("buttonHover");
-            titleButton.setTexture("titleButtonHover"); // Switch to hover image
+            titleButton.setTexture("titleButtonHover"); 
         });
         titleButton.on("pointerout", () => {
-            titleButton.setTexture("titleButton"); // Switch back to normal image
+            titleButton.setTexture("titleButton"); 
         });
         titleButton.on("pointerdown", () => {
             this.sound.play("buttonClick");

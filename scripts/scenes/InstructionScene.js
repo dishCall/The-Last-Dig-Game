@@ -14,10 +14,14 @@ export default class InstructionScene extends Phaser.Scene{
        this.load.image('coins', './assets/images/Guide3.png');
        this.load.image('mobs', './assets/images/Guide4.png');
        this.load.image("backButton", "/assets/buttons/Back.png");
+       this.load.image("backButtonHover", "/assets/buttons/BackHover.png");
        this.load.image("nextButton", "/assets/buttons/Next.png");
+       this.load.image("nextButtonHover", "/assets/buttons/NextHover.png");
        this.load.image("prevButton", "/assets/buttons/Prev.png");
+       this.load.image("prevButtonHover", "/assets/buttons/PrevHover.png");
        this.load.audio("buttonHover", "/assets/audio/HoverButtonSFX.mp3");
        this.load.audio("buttonClick", "/assets/audio/ClickButtonSFX.mp3");
+       
     }
 
     create(){
@@ -32,53 +36,93 @@ export default class InstructionScene extends Phaser.Scene{
         this.coins.setVisible(false);
         this.mobs.setVisible(false);
 
-        //Next Button
+        // Next Button
         let nextButton = this.add.image(
-            750,
+            740,
             440,
             "nextButton"
-            );
-
-        nextButton.setScale(0.2);
+        );
+        nextButton.setScale(0.8);
         nextButton.setInteractive({ useHandCursor: true });
+
+        let nextButtonHover = this.add.image(
+            740,
+            440,
+            "nextButtonHover"
+        );
+        nextButtonHover.setScale(0.8);
+        nextButtonHover.setVisible(false);
+
         nextButton.on("pointerover", () => {
             this.sound.play("buttonHover");
+            nextButtonHover.setVisible(true);
         });
-        nextButton.on('pointerdown', () => this.nxtPage());
 
-        //Prev Button
+        nextButton.on("pointerout", () => {
+            nextButtonHover.setVisible(false);
+        });
+
+        nextButton.on("pointerdown", () => this.nxtPage());
+
+        // Prev Button
         let prevButton = this.add.image(
-            50,
+            60,
             440,
-        "prevButton"
+            "prevButton"
         );
-
-        prevButton.setScale(0.2);
+        prevButton.setScale(0.8);
         prevButton.setInteractive({ useHandCursor: true });
+        
+        let prevButtonHover = this.add.image(
+            60,
+            440,
+            "prevButtonHover"
+        );
+        prevButtonHover.setScale(0.8);
+        prevButtonHover.setVisible(false);
+        
         prevButton.on("pointerover", () => {
             this.sound.play("buttonHover");
+            prevButtonHover.setVisible(true);
         });
-        prevButton.on('pointerdown', () => this.prevPage());
-
+        
+        prevButton.on("pointerout", () => {
+            prevButtonHover.setVisible(false);
+        });
+        
+        prevButton.on("pointerdown", () => this.prevPage());
 
         // Back Button
         let backButton = this.add.image(
-            75,
+            70,
             60,
             "backButton"
         );
-
-        backButton.setScale(0.4);
+        backButton.setScale(0.8);
         backButton.setInteractive({ useHandCursor: true });
+        
+        let backButtonHover = this.add.image(
+            70,
+            60,
+            "backButtonHover"
+        );
+        backButtonHover.setScale(0.8);
+        backButtonHover.setVisible(false);
+        
         backButton.on("pointerover", () => {
             this.sound.play("buttonHover");
+            backButtonHover.setVisible(true);
         });
+        
+        backButton.on("pointerout", () => {
+            backButtonHover.setVisible(false);
+        });
+        
         backButton.on("pointerdown", () => {
-        this.scene.start("TitleScene");
-        this.sound.play("buttonClick");
+            this.scene.start("TitleScene");
+            this.sound.play("buttonClick");
         });
-
-    }
+            }
 
     nxtPage(){
         this.sound.play("buttonClick");

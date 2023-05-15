@@ -10,6 +10,7 @@ import GameOverScene3 from './scenes/GameOverScene3.js';
 import StageClearScene from './scenes/StageClearScene.js'
 import StageClearScene2 from './scenes/StageClearScene2.js';
 import StageClearScene3 from './scenes/StageClearScene3.js';
+import PauseScene from './scenes/PauseScene.js';
 
 
 let titleScene = new TitleScene();
@@ -24,6 +25,7 @@ let gameOverScene3 = new GameOverScene3();
 let stageClearScene = new StageClearScene();
 let stageClearScene2 = new StageClearScene2();
 let stageClearScene3 = new StageClearScene3();
+let pauseScene = new PauseScene();
 
 
 let config = {
@@ -54,12 +56,10 @@ game.scene.add('GameOverScene3', gameOverScene3);
 game.scene.add('StageClearScene', stageClearScene);
 game.scene.add('StageClearScene2', stageClearScene2);
 game.scene.add('StageClearScene3', stageClearScene3);
+game.scene.add('PauseScene', pauseScene);
 
 // Starting Scene
 game.scene.start('TitleScene');
-
-
-// This variable should be useable inside the scene1.
 
 
 
