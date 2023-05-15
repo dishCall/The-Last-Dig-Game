@@ -14,6 +14,7 @@ export default class GameScene extends Phaser.Scene {
         this.pMobs;
         this.gEnemies;
         this.enemyMovementRange = 200;
+        this.keyIsInPlayer = false;
     }
 
     preload(){
@@ -86,23 +87,14 @@ export default class GameScene extends Phaser.Scene {
         this.map.createLayer('backdrops-extra', this.tileset, 0, 60)
         this.map.createLayer('backdrops', this.tileset, 0, 60)
         this.map.createLayer('extra details', this.tileset, 0, 60)
-    
+        
         this.flag.setCollisionByExclusion(-1, true);
         this.platform.setCollisionByExclusion(-1, true);
         this.water.setCollisionByExclusion(-1, true);
     
         // Coins
-        this.CoinLayer = this.map.getObjectLayer('coins')['objects'];
-        
-        this.coins = this.physics.add.staticGroup()
-        this.CoinLayer.forEach(object => {
-            let obj = this.coins.create(object.x, object.y, "coin"); 
-            obj.setScale(0.20); 
-            obj.setOrigin(0.5, 0.5); 
-            obj.body.width = object.width; 
-            obj.body.height = object.height;
-        })
-    
+        this.coins = this.physics.add.staticGroup();
+        this.coins.create(300, 300, 'coin');
         // RedShell
         this.enemyGround = this.map.getObjectLayer('ground enemies')['objects'];
     
@@ -169,12 +161,12 @@ export default class GameScene extends Phaser.Scene {
         this.heart3 = this.add.sprite(90, 50, 'heart').setScrollFactor(0);
 
         // Texts
-        this.coinText = this.add.text(180, 10, `Coins: ${this.coinsScore}x`, {
+      /*  this.coinText = this.add.text(180, 10, `Coins: ${this.coinsScore}x`, {
             fontSize: '20px',
             fill: '#000000'
           });
         this.coinText.setScrollFactor(0);
-    
+    */
         this.scoreText = this.add.text(15, 10, `Score: ${this.score}`,{
             fontSize: '20px',
             fill: '#000000'
@@ -197,7 +189,7 @@ export default class GameScene extends Phaser.Scene {
         this.physics.add.collider(this.player, this.gEnemies, this.hitEnemy, null, this);
         
         // Win Conditions - If player collides with the flag at the end of the map
-        this.physics.add.collider(this.player, this.flag, this.clear, null, this);
+        this.physics.add.collider(this.player, this.flag, this.playerOnDoor, null, this);
     
         this.cameras.main
         .setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels)
@@ -210,6 +202,7 @@ export default class GameScene extends Phaser.Scene {
         
         if (this.cursors.space.isDown) {
             this.player.anims.play('attack', true);
+            this.player.setVelocityX(0);
         }
         else if (this.cursors.left.isDown){
             this.player.setVelocityX(-this.speed);
@@ -227,55 +220,44 @@ export default class GameScene extends Phaser.Scene {
         }   
     
         if (this.cursors.up.isDown && this.player.body.onFloor()){
-            this.player.setVelocityY(-380);
+            this.player.setVelocityY(-500);
         }
     }
     
     collectCoins(player, coins){
-        coins.destroy(coins.x, coins.y)
-        this.coinsScore ++;
-        this.coinCounter++;
+        coins.destroy();
+        this.coinsScore++;
     
-        this.coinText.setText(`Coins: ${this.coinsScore}x`);
-    
-        if(this.coinCounter==5){
-            this.score+=200
-            this.scoreText.setText(`Score: ${this.score}`);
-            this.coinCounter = 0;
-        }
-    
-        if(this.coinsScore==21){
-            this.score+=1000
-            this.scoreText.setText(`Score: ${this.score}`);
-        }
-        
+        this.keyIsInPlayer = true; // set keyIsInPlayer to true
+        this.add.text(510, 20, 'Key Collected!', {
+            font: 'bold 16px Arial',
+            fill: '#fff',
+            stroke: '#000',
+            strokeThickness: 4
+        }).setOrigin(1, 0).setScrollFactor(0); // add text to show that key is collected
         this.sound.play("CollectCoin", { volume: 0.3 });
     
         return false; 
     }
     hitEnemy(player, gEnemies){
+     
+    if (player.anims.currentAnim.key == 'attack') {
+        gEnemies.disableBody(false,false);
+        this.tweens.add({
+            targets: gEnemies,
+            alpha: 0.3,
+            scaleX: 1.5,
+            scaleY: 1.5,
+            ease: 'Linear',
+            duration: 200,
+            onComplete: function() {
+                gEnemies.destroy(gEnemies.x, gEnemies.y);
+            },
+        });
 
-        player.setVelocityY(-400)
-    
-        if(gEnemies.body.touching.up && !gEnemies.hit){
-            this.sound.play("JumpHitEnemysfx");
-            gEnemies.disableBody(false,false);
-            this.tweens.add({
-                targets: gEnemies,
-                alpha: 0.3,
-                scaleX: 1.5,
-                scaleY: 1.5,
-                ease: 'Linear',
-                duration: 200,
-                onComplete: function() {
-                    gEnemies.destroy(gEnemies.x, gEnemies.y);
-                },
-            });
-    
-            this.score+=100
-            this.scoreText.setText(`Score: ${this.score}`);
-            
-        }
+        this.score+=100;
+        this.scoreText.setText(`Score: ${this.score}`);
+    }
     
         else{
             if (player.invulnerable == false){
@@ -354,11 +336,28 @@ export default class GameScene extends Phaser.Scene {
     }
 
     // Win-Lose Fucntions
-    clear(){
-        this.scene.start("StageClearScene")
-        this.sound.stopAll();
+    playerOnDoor(player, flag) {
+        if (this.keyIsInPlayer) {
+            this.scene.start("StageClearScene");
+            this.sound.stopAll();
+        } else {
+            // Show text for a few seconds if the player hasn't collected the key
+            if (!this.keyReminderText) {
+                this.keyReminderText = this.add.text(350, 250, "You need to find the key first!", {
+                    font: 'bold 16px Arial',
+                    fill: '#fff',
+                    stroke: '#000',
+                    strokeThickness: 4
+                }).setOrigin(0.5, 1).setScrollFactor(0);
+    
+                this.time.delayedCall(3000, function() {
+                    this.keyReminderText.destroy();
+                    this.keyReminderText = null;
+                }, [], this);
+            }
+        }
     }
-
+    
     gameOver() {
         this.sound.stopAll();
         this.scene.start('GameOverScene');
