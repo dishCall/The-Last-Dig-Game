@@ -40,6 +40,8 @@ export default class GameScene extends Phaser.Scene {
         this.load.audio("Swordmisssfx", "/assets/audio/SwordMissSFX.wav");
         this.load.audio("JumpHitBluesfx", "/assets/audio/JumpHitBlueSFX.mp3");
         this.load.audio("FriendHitEnemysfx", "/assets/audio/FriendHitEnemySFX.mp3");
+        this.load.audio("oofPlayer", "/assets/audio/oof2.wav");
+        this.load.audio("enemyDeath", "/assets/audio/arggs3.wav");
     }
 
     
@@ -347,6 +349,7 @@ export default class GameScene extends Phaser.Scene {
 
         if (player.anims.currentAnim.key == 'attack_left' || player.anims.currentAnim.key == 'attack_right') {
             enemies.destroy();
+            this.sound.play("enemyDeath");
             this.score+=100;
             this.scoreText.setText(`Score: ${this.score}`);
         }
@@ -354,7 +357,7 @@ export default class GameScene extends Phaser.Scene {
     playerCollide(player, enemies) {
     if (!player.isInvulnerable) {
         player.isInvulnerable = true;
-
+        this.sound.play('oofPlayer');
         this.lives -= 1;
 
         if (this.lives === 0) {
