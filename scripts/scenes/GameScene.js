@@ -30,6 +30,7 @@ export default class GameScene extends Phaser.Scene {
         this.load.image("pauseButtonHover", "/assets/buttons/PauseHover.png");
         this.load.spritesheet('player_walk', '/assets/images/Adventurer.png', {frameWidth: 32, frameHeight: 32});
         this.load.spritesheet('player_attack', '/assets/images/AttackAnim.png', {frameWidth: 32, frameHeight: 32});
+        this.load.spritesheet('player_jump', '/assets/images/JumpAnim.png', {frameWidth: 32, frameHeight: 32});
         this.load.audio("gameBGM", "/assets/audio/GameBGM.mp3");
         this.load.audio("CollectCoin", "/assets/audio/CollectCoinSFX.mp3");
         this.load.audio("Hitsfx", "/assets/audio/HitSFX.wav");
@@ -146,6 +147,13 @@ export default class GameScene extends Phaser.Scene {
             repeat: 0
         });
 
+        this.anims.create({
+            key: 'jump',
+            frames: this.anims.generateFrameNumbers('player_jump', { start: 0, end: 7 }),
+            frameRate: 15,
+            repeat: -1
+        });
+
         this.player.invulnerable = false;
 
         //Hearts
@@ -201,39 +209,48 @@ export default class GameScene extends Phaser.Scene {
         .startFollow(this.player);
     }
     
-update() {
-    this.cursors = this.input.keyboard.createCursorKeys();
-    this.speed = 150;
-
-    if (this.cursors.space.isDown) {
-        if (this.player.flipX) {
-            this.player.anims.play('attack_left', true);
+    update() {
+        this.cursors = this.input.keyboard.createCursorKeys();
+        this.speed = 150;
+    
+        if (this.cursors.space.isDown) {
+            // Attack animation
+            if (this.player.flipX) {
+                this.player.anims.play('attack_left', true);
+            } else {
+                this.player.anims.play('attack_right', true);
+            }
+            this.player.setVelocityX(0);
+        } else if (this.cursors.left.isDown) {
+            // Left movement animation
+            this.player.setVelocityX(-this.speed);
+            this.player.anims.play('left', true);
+            this.player.flipX = true; // Set flipX to true to face left
+        } else if (this.cursors.right.isDown) {
+            // Right movement animation
+            this.player.setVelocityX(this.speed);
+            this.player.anims.play('right', true);
+            this.player.flipX = false; // Set flipX to false to face right
         } else {
-            this.player.anims.play('attack_right', true);
+            this.player.setVelocityX(0);
+            if (this.player.body.onFloor()) {
+                // Standing or turning animation on the floor
+                if (this.player.flipX) {
+                    this.player.anims.play('turn_left');
+                } else {
+                    this.player.anims.play('turn_right');
+                }
+            } else {
+                // Jump animation
+                this.player.anims.play('jump', true);
+            }
         }
-        this.player.setVelocityX(0);
-    } else if (this.cursors.left.isDown) {
-        this.player.setVelocityX(-this.speed);
-        this.player.anims.play('left', true);
-        this.player.flipX = true; // Set flipX to true to face left
-    } else if (this.cursors.right.isDown) {
-        this.player.setVelocityX(this.speed);
-        this.player.anims.play('right', true);
-        this.player.flipX = false; // Set flipX to false to face right
-    } else {
-        this.player.setVelocityX(0);
-        if (this.player.flipX) {
-            this.player.anims.play('turn_left');
-        } else {
-            this.player.anims.play('turn_right');
+    
+        if (this.cursors.up.isDown && this.player.body.onFloor()) {
+            // Jumping
+            this.player.setVelocityY(-500);
         }
     }
-
-    if (this.cursors.up.isDown && this.player.body.onFloor()) {
-        this.player.setVelocityY(-500);
-    }
-}
-
     
     collectCoins(player, coins) {
         coins.destroy();
