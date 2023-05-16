@@ -165,7 +165,7 @@ export default class GameScene extends Phaser.Scene {
         hoverImage.setAlpha(0);
         });
 
-        // Scpre
+        // Score
         this.scoreText = this.add.text(15, 10, `Score: ${this.score}`,{
             fontSize: '20px',
             fill: '#000000'
