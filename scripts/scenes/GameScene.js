@@ -15,6 +15,8 @@ export default class GameScene extends Phaser.Scene {
         this.gEnemies;
         this.enemyMovementRange = 200;
         this.keyIsInPlayer = false;
+        this.hasPlayedSfx = false;
+        
     }
 
     preload(){
@@ -34,7 +36,7 @@ export default class GameScene extends Phaser.Scene {
         this.load.audio("gameBGM", "/assets/audio/GameBGM.mp3");
         this.load.audio("CollectCoin", "/assets/audio/CollectCoinSFX.mp3");
         this.load.audio("Hitsfx", "/assets/audio/HitSFX.wav");
-        this.load.audio("PlayerattackSFX", "/assets/audio/PlayerAttackSFX.mp3");
+        this.load.audio("Swordmisssfx", "/assets/audio/SwordMissSFX.wav");
         this.load.audio("JumpHitBluesfx", "/assets/audio/JumpHitBlueSFX.mp3");
         this.load.audio("FriendHitEnemysfx", "/assets/audio/FriendHitEnemySFX.mp3");
     }
@@ -99,7 +101,7 @@ export default class GameScene extends Phaser.Scene {
     
         // Coins
         this.coins = this.physics.add.staticGroup();
-        this.coins.create(50, 100, 'coin');
+        this.coins.create(60, 130, 'coin');
 
         // Player
         this.player = this.physics.add.sprite(200, 850, 'player');
@@ -136,14 +138,14 @@ export default class GameScene extends Phaser.Scene {
         this.anims.create({
             key: 'attack_right',
             frames: this.anims.generateFrameNumbers('player_attack', { start: 0, end: 3 }),
-            frameRate: 20,
+            frameRate: 12,
             repeat: 0
         });
 
                 this.anims.create({
             key: 'attack_left',
             frames: this.anims.generateFrameNumbers('player_attack', { start: 0, end: 3 }),
-            frameRate: 20,
+            frameRate: 12,
             repeat: 0
         });
 
@@ -245,12 +247,30 @@ export default class GameScene extends Phaser.Scene {
                 this.player.anims.play('jump', true);
             }
         }
+
+        if (this.player.anims.currentAnim.key === 'attack_right') {
+            const currentFrame = this.player.anims.currentFrame;
+            if (currentFrame && currentFrame.index === 3) {
+                const volume = 0.25;
+                this.sound.play('Swordmisssfx', { volume });
+            }
+        }
+
+        if (this.player.anims.currentAnim.key === 'attack_left') {
+            const currentFrame = this.player.anims.currentFrame;
+            if (currentFrame && currentFrame.index === 3) {
+                const volume = 0.25;
+                this.sound.play('Swordmisssfx', { volume });
+            }
+        }
     
         if (this.cursors.up.isDown && this.player.body.onFloor()) {
             // Jumping
             this.player.setVelocityY(-500);
         }
     }
+
+    
     
     collectCoins(player, coins) {
         coins.destroy();
