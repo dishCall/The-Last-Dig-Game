@@ -28,10 +28,8 @@ export default class GameScene extends Phaser.Scene {
         this.load.image('RedShell', './assets/images/RedShell.png');
         this.load.image("pauseButton", "/assets/buttons/Pause.png");
         this.load.image("pauseButtonHover", "/assets/buttons/PauseHover.png");
-        this.load.spritesheet('player_right', '/assets/images/Adventurer.png', {frameWidth: 32, frameHeight: 32});
-                this.load.spritesheet('player_left', '/assets/images/AdventurerLeft.png', {frameWidth: 32, frameHeight: 32});
-        this.load.spritesheet('player_attack_right', '/assets/images/AttackAnim.png', {frameWidth: 32, frameHeight: 32});
-        this.load.spritesheet('player_attack_left', '/assets/images/AttackAnimLeft.png', {frameWidth: 32, frameHeight: 32});
+        this.load.spritesheet('player_walk', '/assets/images/Adventurer.png', {frameWidth: 32, frameHeight: 32});
+        this.load.spritesheet('player_attack', '/assets/images/AttackAnim.png', {frameWidth: 32, frameHeight: 32});
         this.load.audio("gameBGM", "/assets/audio/GameBGM.mp3");
         this.load.audio("CollectCoin", "/assets/audio/CollectCoinSFX.mp3");
         this.load.audio("Hitsfx", "/assets/audio/HitSFX.wav");
@@ -110,40 +108,40 @@ export default class GameScene extends Phaser.Scene {
 
         this.anims.create({
             key: 'left',
-            frames: this.anims.generateFrameNumbers('player_left', { start: 3, end: 0 }),
+            frames: this.anims.generateFrameNumbers('player_walk', { start: 6, end: 9 }),
             frameRate: 10,
             repeat: -1
         });
 
         this.anims.create({
             key: 'turn_right',
-            frames: [{ key: 'player_right', frame: 4 }],
+            frames: [{ key: 'player_walk', frame: 4 }],
             frameRate: 20
         });
 
         this.anims.create({
             key: 'turn_left',
-            frames: [{ key: 'player_left', frame: 4 }],
+            frames: [{ key: 'player_walk', frame: 4 }],
             frameRate: 20
         });
 
         this.anims.create({
             key: 'right',
-            frames: this.anims.generateFrameNumbers('player_right', { start: 6, end: 9 }),
+            frames: this.anims.generateFrameNumbers('player_walk', { start: 6, end: 9 }),
             frameRate: 10,
             repeat: -1
         });
 
         this.anims.create({
             key: 'attack_right',
-            frames: this.anims.generateFrameNumbers('player_attack_right', { start: 0, end: 3 }),
+            frames: this.anims.generateFrameNumbers('player_attack', { start: 0, end: 3 }),
             frameRate: 15,
             repeat: 0
         });
 
                 this.anims.create({
             key: 'attack_left',
-            frames: this.anims.generateFrameNumbers('player_attack_left', { start: 0, end: 3 }),
+            frames: this.anims.generateFrameNumbers('player_attack', { start: 0, end: 3 }),
             frameRate: 15,
             repeat: 0
         });
