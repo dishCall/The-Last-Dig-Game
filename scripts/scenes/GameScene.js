@@ -241,13 +241,14 @@ export default class GameScene extends Phaser.Scene {
         this.physics.add.collider(this.player, this.platform);
 
         this.physics.add.overlap(this.player, this.coins, this.collectCoins, null, this);
-
+        
         this.physics.add.collider(this.player, this.water, this.gameOver, null, this);
         this.physics.add.collider(this.enemies, this.platform);
-        this.physics.add.collider(this.player, this.enemy, this.handlePlayerEnemyCollision, null, this);
         
         this.physics.add.collider(this.player, this.flag, this.playerOnDoor, null, this);
     
+        this.physics.add.collider(this.player,this.enemies, this.playerCollide, null, this);
+        this.physics.add.collider(this.player,this.enemies,this.hitEnemy, null, this);
         this.cameras.main
         .setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels)
         .startFollow(this.player);
@@ -336,14 +337,40 @@ export default class GameScene extends Phaser.Scene {
         if (this.cursors.up.isDown && this.player.body.onFloor()) {
             this.player.setVelocityY(-500);
         }
+        console.log(this.lives);
+        //console.log(this.enemies);
+        
     }
 
     
-    
+    hitEnemy(player, enemies){
+
+        if (player.anims.currentAnim.key == 'attack_left' || player.anims.currentAnim.key == 'attack_right') {
+            enemies.destroy();
+            this.score+=100;
+            this.scoreText.setText(`Score: ${this.score}`);
+        }
+     }
+    playerCollide(player, enemies) {
+    if (!player.isInvulnerable) {
+        player.isInvulnerable = true;
+
+        this.lives -= 1;
+
+        if (this.lives === 0) {
+            this.scene.start('GameOverScene');
+        } else {
+            // Hide player briefly to indicate invulnerability
+            player.alpha = 0.5;
+            this.time.delayedCall(1000, () => {
+                player.alpha = 1;
+                player.isInvulnerable = false;
+            });
+        }
+    }
+}
     collectCoins(player, coins) {
         coins.destroy();
-        this.coinsScore++;
-    
         this.keyIsInPlayer = true; 
     
         const keyCollectedImage = this.add.image(400, 100, "KeyCollectText")
