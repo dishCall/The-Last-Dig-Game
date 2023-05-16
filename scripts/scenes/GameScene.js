@@ -33,7 +33,7 @@ export default class GameScene extends Phaser.Scene {
         this.load.audio("gameBGM", "/assets/audio/GameBGM.mp3");
         this.load.audio("CollectCoin", "/assets/audio/CollectCoinSFX.mp3");
         this.load.audio("Hitsfx", "/assets/audio/HitSFX.wav");
-        this.load.audio("JumpHitEnemysfx", "/assets/audio/JumpHitEnemySFX.mp3");
+        this.load.audio("PlayerattackSFX", "/assets/audio/PlayerAttackSFX.mp3");
         this.load.audio("JumpHitBluesfx", "/assets/audio/JumpHitBlueSFX.mp3");
         this.load.audio("FriendHitEnemysfx", "/assets/audio/FriendHitEnemySFX.mp3");
     }
@@ -135,14 +135,14 @@ export default class GameScene extends Phaser.Scene {
         this.anims.create({
             key: 'attack_right',
             frames: this.anims.generateFrameNumbers('player_attack', { start: 0, end: 3 }),
-            frameRate: 15,
+            frameRate: 20,
             repeat: 0
         });
 
                 this.anims.create({
             key: 'attack_left',
             frames: this.anims.generateFrameNumbers('player_attack', { start: 0, end: 3 }),
-            frameRate: 15,
+            frameRate: 20,
             repeat: 0
         });
 
