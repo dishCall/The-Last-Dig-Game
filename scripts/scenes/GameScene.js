@@ -33,6 +33,7 @@ export default class GameScene extends Phaser.Scene {
         this.load.spritesheet('player_walk', '/assets/images/Adventurer.png', {frameWidth: 32, frameHeight: 32});
         this.load.spritesheet('player_attack', '/assets/images/AttackAnim.png', {frameWidth: 32, frameHeight: 32});
         this.load.spritesheet('player_jump', '/assets/images/JumpAnim.png', {frameWidth: 32, frameHeight: 32});
+        this.load.spritesheet('enemy', '/assets/images/ZombieEnemy.png', {frameWidth: 32, frameHeight: 38});
         this.load.audio("gameBGM", "/assets/audio/GameBGM.mp3");
         this.load.audio("CollectCoin", "/assets/audio/CollectCoinSFX.mp3");
         this.load.audio("Hitsfx", "/assets/audio/HitSFX.wav");
@@ -99,9 +100,43 @@ export default class GameScene extends Phaser.Scene {
         this.platform.setCollisionByExclusion(-1, true);
         this.water.setCollisionByExclusion(-1, true);
     
-        // Coins
+        //Key
         this.coins = this.physics.add.staticGroup();
         this.coins.create(60, 130, 'coin');
+
+        //Enemies
+        this.enemies = this.physics.add.group();
+
+        //Enemy 1
+        const enemy = this.enemies.create(1900, 850, 'enemy');
+        enemy.setScale(1.2);
+        enemy.setCollideWorldBounds(false);
+        enemy.setVelocityX(100);
+
+         //Enemy 2
+        const enemy2 = this.enemies.create(820, 850, 'enemy');
+        enemy2.setScale(1.2);
+        enemy2.setCollideWorldBounds(false);
+        enemy2.setVelocityX(100);
+
+        //Enemy 3
+        const enemy3 = this.enemies.create(820, 220, 'enemy');
+        enemy3.setScale(1.2);
+        enemy3.setCollideWorldBounds(false);
+        enemy3.setVelocityX(100);
+
+        //Enemy 4
+        const enemy4 = this.enemies.create(1030, 220, 'enemy');
+        enemy4.setScale(1.2);
+        enemy4.setCollideWorldBounds(false);
+        enemy4.setVelocityX(100);
+
+        //Enemy 5
+        const enemy5 = this.enemies.create(2370, 320, 'enemy');
+        enemy5.setScale(1.2);
+        enemy5.setCollideWorldBounds(false);
+        enemy5.setVelocityX(100);
+        
 
         // Player
         this.player = this.physics.add.sprite(200, 850, 'player');
@@ -156,6 +191,13 @@ export default class GameScene extends Phaser.Scene {
             repeat: -1
         });
 
+        this.anims.create({
+            key: 'enemy_movement',
+            frames: this.anims.generateFrameNumbers('enemy', { start: 0, end: 3 }),
+            frameRate: 3,
+            repeat: -1
+            });
+
         this.player.invulnerable = false;
 
         //Hearts
@@ -163,7 +205,7 @@ export default class GameScene extends Phaser.Scene {
         this.heart2 = this.add.sprite(60, 50, 'heart').setScrollFactor(0);
         this.heart3 = this.add.sprite(90, 50, 'heart').setScrollFactor(0);
 
-        // Pause button
+        //Pause button
         const pauseButton = this.add.image(765, 35, 'pauseButton')
         .setInteractive()
         .setScrollFactor(0)
@@ -188,22 +230,22 @@ export default class GameScene extends Phaser.Scene {
         hoverImage.setAlpha(0);
         });
 
-        // Score
+        //Score
         this.scoreText = this.add.text(15, 10, `Score: ${this.score}`,{
             fontSize: '20px',
             fill: '#ffffff'
         }); 
         this.scoreText.setScrollFactor(0);
     
-        // Physics and Camera
+        //Physics and Camera
         this.physics.add.collider(this.player, this.platform);
 
         this.physics.add.overlap(this.player, this.coins, this.collectCoins, null, this);
 
-        // Lose Conditions - If player collides with red enemies/water
         this.physics.add.collider(this.player, this.water, this.gameOver, null, this);
+        this.physics.add.collider(this.enemies, this.platform);
+        this.physics.add.collider(this.player, this.enemy, this.handlePlayerEnemyCollision, null, this);
         
-        // Win Conditions - If player collides with the flag at the end of the map
         this.physics.add.collider(this.player, this.flag, this.playerOnDoor, null, this);
     
         this.cameras.main
@@ -227,12 +269,12 @@ export default class GameScene extends Phaser.Scene {
             // Left movement animation
             this.player.setVelocityX(-this.speed);
             this.player.anims.play('left', true);
-            this.player.flipX = true; // Set flipX to true to face left
+            this.player.flipX = true; 
         } else if (this.cursors.right.isDown) {
             // Right movement animation
             this.player.setVelocityX(this.speed);
             this.player.anims.play('right', true);
-            this.player.flipX = false; // Set flipX to false to face right
+            this.player.flipX = false; 
         } else {
             this.player.setVelocityX(0);
             if (this.player.body.onFloor()) {
@@ -247,6 +289,33 @@ export default class GameScene extends Phaser.Scene {
                 this.player.anims.play('jump', true);
             }
         }
+
+        this.enemyMovementRange = 50;
+        this.enemies.children.each((enemy) => {
+            enemy.anims.play('enemy_movement', true);
+          
+            if (!enemy.originalX) {
+              enemy.originalX = enemy.x;
+            }
+          
+            // Move within the specified range
+            if (enemy.x <= enemy.originalX - this.enemyMovementRange) {
+                enemy.body.velocity.x = 20; 
+                enemy.flipX = false; 
+            } else if (enemy.x >= enemy.originalX + this.enemyMovementRange) {
+                enemy.body.velocity.x = -20; 
+                enemy.flipX = true; 
+            }
+          
+            // Reverse direction when hitting a platform boundary
+            if (enemy.body.blocked.right || enemy.body.touching.right) {
+              enemy.body.velocity.x = -20;
+              enemy.flipX = false; 
+            } else if (enemy.body.blocked.left || enemy.body.touching.left) {
+              enemy.body.velocity.x = 20; 
+              enemy.flipX = true; 
+            }
+          });
 
         if (this.player.anims.currentAnim.key === 'attack_right') {
             const currentFrame = this.player.anims.currentFrame;
@@ -265,7 +334,6 @@ export default class GameScene extends Phaser.Scene {
         }
     
         if (this.cursors.up.isDown && this.player.body.onFloor()) {
-            // Jumping
             this.player.setVelocityY(-500);
         }
     }
@@ -291,7 +359,6 @@ export default class GameScene extends Phaser.Scene {
     
         return false;
     }
-
 
     // Win-Lose Functions
     playerOnDoor(player, flag) {
