@@ -73,15 +73,16 @@ export default class PauseScene extends Phaser.Scene {
           });
       
         // Main menu button
-        const mainMenuButton = this.add.image(100, 290, 'titleButton')
+          const mainMenuButton = this.add.image(100, 290, 'titleButton')
           .setInteractive()
           .setDepth(-1)
           .setScale(0.55)
           .on('pointerup', () => {
             this.sound.play('buttonClick');
-            this.scene.stop();
             this.sound.stopAll();
             this.scene.start('TitleScene');
+            this.scene.stop();
+            this.scene.stop('GameScene');
           })
           .on('pointerover', () => {
             mainMenuButton.setTexture('titleButtonHover');
