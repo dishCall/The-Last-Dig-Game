@@ -11,6 +11,8 @@ import StageClearScene from './scenes/StageClearScene.js'
 import StageClearScene2 from './scenes/StageClearScene2.js';
 import StageClearScene3 from './scenes/StageClearScene3.js';
 import PauseScene from './scenes/PauseScene.js';
+import PauseScene2 from './scenes/PauseScene2.js';
+import PauseScene3 from './scenes/PauseScene3.js';
 
 
 let titleScene = new TitleScene();
@@ -26,6 +28,8 @@ let stageClearScene = new StageClearScene();
 let stageClearScene2 = new StageClearScene2();
 let stageClearScene3 = new StageClearScene3();
 let pauseScene = new PauseScene();
+let pauseScene2 = new PauseScene2();
+let pauseScene3 = new PauseScene3();
 
 
 let config = {
@@ -57,6 +61,8 @@ game.scene.add('StageClearScene', stageClearScene);
 game.scene.add('StageClearScene2', stageClearScene2);
 game.scene.add('StageClearScene3', stageClearScene3);
 game.scene.add('PauseScene', pauseScene);
+game.scene.add('PauseScene2', pauseScene2);
+game.scene.add('PauseScene3', pauseScene3);
 
 // Starting Scene
 game.scene.start('TitleScene');

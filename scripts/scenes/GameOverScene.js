@@ -25,7 +25,7 @@ export default class GameOverScene extends Phaser.Scene{
       bg.setScale(0.4);
 
     //BGM
-    this.sound.play("gameoverBGM", { loop: true, volume: 0.3 });
+    this.sound.play("gameoverBGM", { loop: false, volume: 0.2});
 
     //Game Over
     let Gameover = this.add.image(
