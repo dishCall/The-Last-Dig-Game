@@ -22,7 +22,6 @@ export default class GameScene2 extends Phaser.Scene {
 
     preload(){
         this.load.image('tiles', './assets/maps/sheet.png');
-        this.load.tilemapTiledJSON('tilemap', './assets/maps/Level2.tmj');
         this.load.image('heart', './assets/icons/heart.png');
         this.load.image('coin', './assets/images/Key.png');
         this.load.image('FindKeyText', './assets/images/FindKey.png');

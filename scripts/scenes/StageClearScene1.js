@@ -12,7 +12,7 @@ export default class StageClearScene1 extends Phaser.Scene{
         this.load.image("titleButtonHover", "/assets/buttons/MenuHover.png");
         this.load.image("nextStageButton", "/assets/buttons/NextLevel.png");
         this.load.image("nextStageHover", "/assets/buttons/NextLevelHover.png");
-        this.load.audio("stageclearBGM", "/assets/audio/StageClearBGM.mp3");
+        this.load.audio("stageclearBGM", "/assets/audio/GameClearBGM.mp3");
         this.load.audio("buttonHover", "/assets/audio/HoverButtonSFX.mp3");
         this.load.audio("buttonClick", "/assets/audio/ClickButtonSFX.mp3");
         
@@ -28,7 +28,7 @@ export default class StageClearScene1 extends Phaser.Scene{
         bg.setScale(0.4);
 
         //BGM
-        this.sound.play("stageclearBGM", { loop: true, volume: 0.3 });
+        this.sound.play("stageclearBGM", { loop: false, volume: 0.5 });
 
         //Stage Clear
         let StageClear = this.add.image(
