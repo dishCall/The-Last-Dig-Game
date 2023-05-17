@@ -6,7 +6,7 @@ export default class GameScene extends Phaser.Scene {
     init(){
         this.lives = 3;
         this.player;
-        this.coins;
+        this.RustyKeys;
         this.cursors;
         this.coinsScore = 0;
         this.coinCounter = 0;
@@ -24,11 +24,9 @@ export default class GameScene extends Phaser.Scene {
         this.load.image('tiles', './assets/maps/sheet.png');
         this.load.tilemapTiledJSON('tilemap', './assets/maps/Level1.tmj');
         this.load.image('heart', './assets/icons/heart.png');
-        this.load.image('coin', './assets/images/Key.png');
+        this.load.image('RustyKey', './assets/images/Key.png');
         this.load.image('FindKeyText', './assets/images/FindKey.png');
         this.load.image('KeyCollectText', './assets/images/KeyCollect.png');
-        this.load.image('BlueShell', './assets/images/BlueShell.png');
-        this.load.image('RedShell', './assets/images/RedShell.png');
         this.load.image("pauseButton", "/assets/buttons/Pause.png");
         this.load.image("pauseButtonHover", "/assets/buttons/PauseHover.png");
         this.load.spritesheet('player_walk', '/assets/images/Adventurer.png', {frameWidth: 32, frameHeight: 32});
@@ -104,39 +102,33 @@ export default class GameScene extends Phaser.Scene {
         this.water.setCollisionByExclusion(-1, true);
     
         //Key
-        this.coins = this.physics.add.staticGroup();
-        // this.coins.create(60, 130, 'coin');
-        this.coins.create(200, 830, 'coin');
+        this.RustyKeys = this.physics.add.staticGroup();
+        this.RustyKeys.create(60, 130, 'RustyKey');
 
         //Enemies
         this.enemies = this.physics.add.group();
         //Enemy 1
         const enemy = this.enemies.create(1900, 850, 'enemy');
-        //enemy.setScale(1.2);
         enemy.setCollideWorldBounds(false);
         enemy.setVelocityX(100);
 
          //Enemy 2
         const enemy2 = this.enemies.create(820, 850, 'enemy');
-        //enemy2.setScale(1.2);
         enemy2.setCollideWorldBounds(false);
         enemy2.setVelocityX(100);
 
         //Enemy 3
         const enemy3 = this.enemies.create(820, 220, 'enemy');
-        //enemy3.setScale(1.2);
         enemy3.setCollideWorldBounds(false);
         enemy3.setVelocityX(100);
 
         //Enemy 4
         const enemy4 = this.enemies.create(1030, 220, 'enemy');
-        //enemy4.setScale(1.2);
         enemy4.setCollideWorldBounds(false);
         enemy4.setVelocityX(100);
 
         //Enemy 5
         const enemy5 = this.enemies.create(2370, 320, 'enemy');
-        //enemy5.setScale(1.2);
         enemy5.setCollideWorldBounds(false);
         enemy5.setVelocityX(100);
         
@@ -244,7 +236,7 @@ export default class GameScene extends Phaser.Scene {
         //Physics and Camera
         this.physics.add.collider(this.player, this.platform);
 
-        this.physics.add.overlap(this.player, this.coins, this.collectCoins, null, this);
+        this.physics.add.overlap(this.player, this.RustyKeys, this.collectCoins, null, this);
         
         this.physics.add.collider(this.player, this.water, this.gameOver, null, this);
         this.physics.add.collider(this.enemies, this.platform);
@@ -392,7 +384,6 @@ export default class GameScene extends Phaser.Scene {
                 }
             }
     
-            // remove I-frame
             this.time.delayedCall(1000, this.removeIFrame, [], this);
     
             if(this.lives==0){
@@ -408,8 +399,8 @@ export default class GameScene extends Phaser.Scene {
         this.player.invulnerable = false;
     }
    
-    collectCoins(player, coins) {
-        coins.destroy();
+    collectCoins(player, RustyKeys) {
+        RustyKeys.destroy();
         this.keyIsInPlayer = true; 
     
         const keyCollectedImage = this.add.image(400, 100, "KeyCollectText")
@@ -426,7 +417,6 @@ export default class GameScene extends Phaser.Scene {
         return false;
     }
 
-    // Win-Lose Functions
     playerOnDoor(player, flag) {
         if (this.keyIsInPlayer) {
             this.scene.start("StageClearScene1");

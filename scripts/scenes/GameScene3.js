@@ -6,7 +6,7 @@ export default class GameScene3 extends Phaser.Scene {
     init(){
         this.lives = 3;
         this.player;
-        this.coins;
+        this.RustyKeys;
         this.cursors;
         this.coinsScore = 0;
         this.coinCounter = 0;
@@ -24,7 +24,7 @@ export default class GameScene3 extends Phaser.Scene {
         this.load.image('tiles', './assets/maps/sheet.png');
         this.load.tilemapTiledJSON('tilemap3', './assets/maps/Level3.tmj');
         this.load.image('heart', './assets/icons/heart.png');
-        this.load.image('coin', './assets/images/Key.png');
+        this.load.image('RustyKey', './assets/images/Key.png');
         this.load.image('FindKeyText', './assets/images/FindKey.png');
         this.load.image('KeyCollectText', './assets/images/KeyCollect.png');
         this.load.image('BlueShell', './assets/images/BlueShell.png');
@@ -104,8 +104,8 @@ export default class GameScene3 extends Phaser.Scene {
         this.water3.setCollisionByExclusion(-1, true);
     
         //Key
-        this.coins = this.physics.add.staticGroup();
-        this.coins.create(910, 550, 'coin');
+        this.RustyKeys = this.physics.add.staticGroup();
+        this.RustyKeys.create(910, 550, 'RustyKey');
 
         //Enemies
 
@@ -249,7 +249,7 @@ export default class GameScene3 extends Phaser.Scene {
         //Physics and Camera
         this.physics.add.collider(this.player, this.platform3);
 
-        this.physics.add.overlap(this.player, this.coins, this.collectCoins, null, this);
+        this.physics.add.overlap(this.player, this.RustyKeys, this.collectCoins, null, this);
         
         this.physics.add.collider(this.player, this.water3, this.gameOver, null, this);
         this.physics.add.collider(this.enemies, this.platform3);
@@ -397,7 +397,6 @@ export default class GameScene3 extends Phaser.Scene {
                 }
             }
     
-            // remove I-frame
             this.time.delayedCall(1000, this.removeIFrame, [], this);
     
             if(this.lives==0){
@@ -413,8 +412,8 @@ export default class GameScene3 extends Phaser.Scene {
         this.player.invulnerable = false;
     }
    
-    collectCoins(player, coins) {
-        coins.destroy();
+    collectCoins(player, RustyKeys) {
+        RustyKeys.destroy();
         this.keyIsInPlayer = true; 
     
         const keyCollectedImage = this.add.image(400, 100, "KeyCollectText")
@@ -431,7 +430,6 @@ export default class GameScene3 extends Phaser.Scene {
         return false;
     }
 
-    // Win-Lose Functions
     playerOnDoor(player, flag3) {
     if (this.keyIsInPlayer) {
         this.scene.start("StageClearScene3");
