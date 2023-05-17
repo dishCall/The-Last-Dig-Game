@@ -22,7 +22,7 @@ export default class GameScene3 extends Phaser.Scene {
 
     preload(){
         this.load.image('tiles', './assets/maps/sheet.png');
-        this.load.tilemapTiledJSON('tilemap', './assets/maps/Level3.tmj');
+        this.load.tilemapTiledJSON('tilemap3', './assets/maps/Level3.tmj');
         this.load.image('heart', './assets/icons/heart.png');
         this.load.image('coin', './assets/images/Key.png');
         this.load.image('FindKeyText', './assets/images/FindKey.png');
@@ -89,19 +89,19 @@ export default class GameScene3 extends Phaser.Scene {
         this.sound.play("gameBGM3", { loop: true, volume: 0.4 });
 
         // Map
-        this.map = this.make.tilemap({key: 'tilemap'});
-        this.tileset = this.map.addTilesetImage('tiles_packed', 'tiles');
-        this.platform = this.map.createLayer('platform', this.tileset, 0, 60);
-        this.flag = this.map.createLayer('flag', this.tileset, 0, 60);
-        this.water = this.map.createLayer('water', this.tileset, 0, 60);
+        this.map3 = this.make.tilemap({key: 'tilemap3'});
+        this.tileset3 = this.map3.addTilesetImage('tiles_packed', 'tiles');
+        this.platform3 = this.map3.createLayer('platform', this.tileset3, 0, 60);
+        this.flag3 = this.map3.createLayer('flag', this.tileset3, 0, 60);
+        this.water3 = this.map3.createLayer('water', this.tileset3, 0, 60);
     
-        this.map.createLayer('backdrops-extra', this.tileset, 0, 60)
-        this.map.createLayer('backdrops', this.tileset, 0, 60)
-        this.map.createLayer('extra details', this.tileset, 0, 60)
+        this.map3.createLayer('backdrops-extra', this.tileset3, 0, 60)
+        this.map3.createLayer('backdrops', this.tileset3, 0, 60)
+        this.map3.createLayer('extra details', this.tileset3, 0, 60)
         
-        this.flag.setCollisionByExclusion(-1, true);
-        this.platform.setCollisionByExclusion(-1, true);
-        this.water.setCollisionByExclusion(-1, true);
+        this.flag3.setCollisionByExclusion(-1, true);
+        this.platform3.setCollisionByExclusion(-1, true);
+        this.water3.setCollisionByExclusion(-1, true);
     
         //Key
         this.coins = this.physics.add.staticGroup();
@@ -247,18 +247,18 @@ export default class GameScene3 extends Phaser.Scene {
         this.scoreText.setScrollFactor(0);
     
         //Physics and Camera
-        this.physics.add.collider(this.player, this.platform);
+        this.physics.add.collider(this.player, this.platform3);
 
         this.physics.add.overlap(this.player, this.coins, this.collectCoins, null, this);
         
-        this.physics.add.collider(this.player, this.water, this.gameOver, null, this);
-        this.physics.add.collider(this.enemies, this.platform);
+        this.physics.add.collider(this.player, this.water3, this.gameOver, null, this);
+        this.physics.add.collider(this.enemies, this.platform3);
         
-        this.physics.add.collider(this.player, this.flag, this.playerOnDoor, null, this);
+        this.physics.add.collider(this.player, this.flag3, this.playerOnDoor, null, this);
     
         this.physics.add.overlap(this.player,this.enemies,this.hitEnemy, null, this);
         this.cameras.main
-        .setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels)
+        .setBounds(0, 0, this.map3.widthInPixels, this.map3.heightInPixels)
         .startFollow(this.player);
     }
     
@@ -432,7 +432,7 @@ export default class GameScene3 extends Phaser.Scene {
     }
 
     // Win-Lose Functions
-    playerOnDoor(player, flag) {
+    playerOnDoor(player, flag3) {
     if (this.keyIsInPlayer) {
         this.scene.start("StageClearScene3");
         this.sound.stopAll();

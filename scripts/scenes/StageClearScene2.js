@@ -28,7 +28,7 @@ export default class StageClearScene2 extends Phaser.Scene{
         bg.setScale(0.4);
 
         //BGM
-        this.sound.play("stageclearBGM", { loop: true, volume: 0.3 });
+        this.sound.play("stageclearBGM", { loop: false, volume: 0.3 });
 
         //Stage Clear
         let StageClear = this.add.image(
@@ -75,7 +75,7 @@ export default class StageClearScene2 extends Phaser.Scene{
         nextStageButton.on("pointerout", () => {
             nextStageButton.setTexture("nextStageButton");
         });
-        titleButton.on("pointerdown", () => {
+        nextStageButton.on("pointerdown", () => {
             this.sound.play("buttonClick");
             this.nextstage();
         });
