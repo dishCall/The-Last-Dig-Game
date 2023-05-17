@@ -200,7 +200,7 @@ export default class TitleScene extends Phaser.Scene {
     }
   
     play() {
-      this.scene.start("GameScene1");
+      this.scene.start("GameScene");
       this.sound.stopAll();
     }
   
