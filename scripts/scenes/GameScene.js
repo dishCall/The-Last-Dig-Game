@@ -16,6 +16,7 @@ export default class GameScene extends Phaser.Scene {
         this.enemyMovementRange = 200;
         this.keyIsInPlayer = false;
         this.hasPlayedSfx = false;
+        this.attackRange = 40;
         
     }
 
@@ -33,7 +34,7 @@ export default class GameScene extends Phaser.Scene {
         this.load.spritesheet('player_walk', '/assets/images/Adventurer.png', {frameWidth: 32, frameHeight: 32});
         this.load.spritesheet('player_attack', '/assets/images/AttackAnim.png', {frameWidth: 32, frameHeight: 32});
         this.load.spritesheet('player_jump', '/assets/images/JumpAnim.png', {frameWidth: 32, frameHeight: 32});
-        this.load.spritesheet('enemy', '/assets/images/ZombieEnemy.png', {frameWidth: 32, frameHeight: 38});
+        this.load.spritesheet('enemy', '/assets/images/ZombieEnemy.png', {frameWidth: 17, frameHeight: 48});
         this.load.audio("gameBGM", "/assets/audio/GameBGM.mp3");
         this.load.audio("CollectCoin", "/assets/audio/CollectCoinSFX.mp3");
         this.load.audio("Hitsfx", "/assets/audio/HitSFX.wav");
@@ -267,6 +268,21 @@ export default class GameScene extends Phaser.Scene {
                 this.player.anims.play('attack_right', true);
             }
             this.player.setVelocityX(0);
+        
+            // Check for enemies within attack range
+            const enemiesInRange = this.enemies.getChildren().filter((enemy) => {
+                return (
+                    Math.abs(enemy.x - this.player.x) <= this.attackRange &&
+                    Math.abs(enemy.y - this.player.y) <= this.attackRange
+                );
+            });
+        
+            enemiesInRange.forEach((enemy) => {
+                enemy.destroy();
+                this.sound.play("enemyDeath");
+                this.score += 100;
+                this.scoreText.setText(`Score: ${this.score}`);
+            });
         } else if (this.cursors.left.isDown) {
             // Left movement animation
             this.player.setVelocityX(-this.speed);
@@ -309,14 +325,6 @@ export default class GameScene extends Phaser.Scene {
                 enemy.flipX = true; 
             }
           
-            // Reverse direction when hitting a platform boundary
-            if (enemy.body.blocked.right || enemy.body.touching.right) {
-              enemy.body.velocity.x = -20;
-              enemy.flipX = false; 
-            } else if (enemy.body.blocked.left || enemy.body.touching.left) {
-              enemy.body.velocity.x = 20; 
-              enemy.flipX = true; 
-            }
           });
 
         if (this.player.anims.currentAnim.key === 'attack_right') {
@@ -353,23 +361,53 @@ export default class GameScene extends Phaser.Scene {
             this.s
             this.scoreText.setText(`Score: ${this.score}`);
         }
-        else if(!player.isInvulnerable) {
-            player.isInvulnerable = true;
-            this.sound.play('oofPlayer');
-            this.lives -= 1;
+        else{
+                player.setVelocityY(-400)
+
+            if (player.invulnerable == false){
+                this.sound.play("oofPlayer");
+                this.lives-=1
+                player.setTint(0xff0000);
+                player.invulnerable = true;
+                
+                if (this.lives == 2){
+                    this.tweens.add({
+                        targets: this.heart3,
+                        alpha: 0,
+                        scaleX: 0,
+                        scaleY: 0,
+                        ease: 'Linear',
+                        duration: 200
+                    });
+                }
     
-            if (this.lives === 0) {
-                this.scene.start('GameOverScene');
-            } else {
-                // Hide player briefly to indicate invulnerability
-                player.alpha = 0.5;
-                this.time.delayedCall(1000, () => {
-                    player.alpha = 1;
-                    player.isInvulnerable = false;
-                });
+                else if(this.lives == 1){
+                    this.tweens.add({
+                        targets: this.heart2,
+                        alpha: 0,
+                        scaleX: 0,
+                        scaleY: 0,
+                        ease: 'Linear',
+                        duration: 200
+                    });
+                }
+            }
+    
+            // remove I-frame
+            this.time.delayedCall(1000, this.removeIFrame, [], this);
+    
+            if(this.lives==0){
+                this.sound.play("oofPlayer");
+                this.scene.start("GameOverScene")
+                this.sound.stopAll();
             }
         }
-     }
+    }
+
+    removeIFrame(){
+        this.player.clearTint()
+        this.player.invulnerable = false;
+    }
    
     collectCoins(player, coins) {
         coins.destroy();
