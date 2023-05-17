@@ -1,7 +1,7 @@
-export default class StageClearScene extends Phaser.Scene{
+export default class StageClearScene1 extends Phaser.Scene{
 
     constructor(){
-        super("StageClearScene")
+        super("StageClearScene1")
     }
 
     preload() {
@@ -75,7 +75,7 @@ export default class StageClearScene extends Phaser.Scene{
         nextStageButton.on("pointerout", () => {
             nextStageButton.setTexture("nextStageButton");
         });
-        titleButton.on("pointerdown", () => {
+        nextStageButton.on("pointerdown", () => {
             this.sound.play("buttonClick");
             this.nextstage();
         });

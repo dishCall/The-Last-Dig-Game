@@ -105,7 +105,8 @@ export default class GameScene extends Phaser.Scene {
     
         //Key
         this.coins = this.physics.add.staticGroup();
-        this.coins.create(60, 130, 'coin');
+        // this.coins.create(60, 130, 'coin');
+        this.coins.create(200, 830, 'coin');
 
         //Enemies
         this.enemies = this.physics.add.group();
@@ -346,8 +347,6 @@ export default class GameScene extends Phaser.Scene {
         if (this.cursors.up.isDown && this.player.body.onFloor()) {
             this.player.setVelocityY(-500);
         }
-        console.log(this.lives);
-        //console.log(this.enemies);
         
     }
 
@@ -429,9 +428,9 @@ export default class GameScene extends Phaser.Scene {
 
     // Win-Lose Functions
     playerOnDoor(player, flag) {
-    if (this.keyIsInPlayer) {
-        this.scene.start("StageClearScene");
-        this.sound.stopAll();
+        if (this.keyIsInPlayer) {
+            this.scene.start("StageClearScene1");
+            this.sound.stopAll();
     } else {
         if (!this.keyReminderImage) {
             this.sound.play("buttonClick")
