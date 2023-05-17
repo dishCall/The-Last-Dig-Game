@@ -108,44 +108,44 @@ export default class GameScene extends Phaser.Scene {
 
         //Enemies
         this.enemies = this.physics.add.group();
-
         //Enemy 1
         const enemy = this.enemies.create(1900, 850, 'enemy');
-        enemy.setScale(1.2);
+        //enemy.setScale(1.2);
         enemy.setCollideWorldBounds(false);
         enemy.setVelocityX(100);
 
          //Enemy 2
         const enemy2 = this.enemies.create(820, 850, 'enemy');
-        enemy2.setScale(1.2);
+        //enemy2.setScale(1.2);
         enemy2.setCollideWorldBounds(false);
         enemy2.setVelocityX(100);
 
         //Enemy 3
         const enemy3 = this.enemies.create(820, 220, 'enemy');
-        enemy3.setScale(1.2);
+        //enemy3.setScale(1.2);
         enemy3.setCollideWorldBounds(false);
         enemy3.setVelocityX(100);
 
         //Enemy 4
         const enemy4 = this.enemies.create(1030, 220, 'enemy');
-        enemy4.setScale(1.2);
+        //enemy4.setScale(1.2);
         enemy4.setCollideWorldBounds(false);
         enemy4.setVelocityX(100);
 
         //Enemy 5
         const enemy5 = this.enemies.create(2370, 320, 'enemy');
-        enemy5.setScale(1.2);
+        //enemy5.setScale(1.2);
         enemy5.setCollideWorldBounds(false);
         enemy5.setVelocityX(100);
         
-
+    
         // Player
         this.player = this.physics.add.sprite(200, 850, 'player');
         this.player.setScale(1.2);
-
         this.player.setCollideWorldBounds(false);
-
+        this.player.body.setSize(32, 32);
+        this.player.body.setOffset(0, 0);        
+        this.player.setOrigin(0.5, 0.75); 
         this.anims.create({
             key: 'left',
             frames: this.anims.generateFrameNumbers('player_walk', { start: 6, end: 9 }),
@@ -249,8 +249,7 @@ export default class GameScene extends Phaser.Scene {
         
         this.physics.add.collider(this.player, this.flag, this.playerOnDoor, null, this);
     
-        this.physics.add.collider(this.player,this.enemies, this.playerCollide, null, this);
-        this.physics.add.collider(this.player,this.enemies,this.hitEnemy, null, this);
+        this.physics.add.overlap(this.player,this.enemies,this.hitEnemy, null, this);
         this.cameras.main
         .setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels)
         .startFollow(this.player);
@@ -351,27 +350,27 @@ export default class GameScene extends Phaser.Scene {
             enemies.destroy();
             this.sound.play("enemyDeath");
             this.score+=100;
+            this.s
             this.scoreText.setText(`Score: ${this.score}`);
         }
-     }
-    playerCollide(player, enemies) {
-    if (!player.isInvulnerable) {
-        player.isInvulnerable = true;
-        this.sound.play('oofPlayer');
-        this.lives -= 1;
-
-        if (this.lives === 0) {
-            this.scene.start('GameOverScene');
-        } else {
-            // Hide player briefly to indicate invulnerability
-            player.alpha = 0.5;
-            this.time.delayedCall(1000, () => {
-                player.alpha = 1;
-                player.isInvulnerable = false;
-            });
+        else if(!player.isInvulnerable) {
+            player.isInvulnerable = true;
+            this.sound.play('oofPlayer');
+            this.lives -= 1;
+    
+            if (this.lives === 0) {
+                this.scene.start('GameOverScene');
+            } else {
+                // Hide player briefly to indicate invulnerability
+                player.alpha = 0.5;
+                this.time.delayedCall(1000, () => {
+                    player.alpha = 1;
+                    player.isInvulnerable = false;
+                });
+            }
         }
-    }
-}
+     }
+   
     collectCoins(player, coins) {
         coins.destroy();
         this.keyIsInPlayer = true; 
