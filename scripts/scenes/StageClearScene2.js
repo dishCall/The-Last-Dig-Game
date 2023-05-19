@@ -12,7 +12,7 @@ export default class StageClearScene2 extends Phaser.Scene{
         this.load.image("titleButtonHover", "/assets/buttons/MenuHover.png");
         this.load.image("nextStageButton", "/assets/buttons/NextLevel.png");
         this.load.image("nextStageHover", "/assets/buttons/NextLevelHover.png");
-        this.load.audio("stageclearBGM", "/assets/audio/StageClearBGM.mp3");
+        this.load.audio("stageclearBGM", "/assets/audio/GameClearBGM.mp3");
         this.load.audio("buttonHover", "/assets/audio/HoverButtonSFX.mp3");
         this.load.audio("buttonClick", "/assets/audio/ClickButtonSFX.mp3");
         
