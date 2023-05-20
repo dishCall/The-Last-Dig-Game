@@ -349,7 +349,6 @@ export default class GameScene extends Phaser.Scene {
             enemies.destroy();
             this.sound.play("enemyDeath");
             this.score+=100;
-            this.s
             this.scoreText.setText(`Score: ${this.score}`);
         }
         else{
